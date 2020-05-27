@@ -2,10 +2,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 public class ObjectPlus implements Serializable
 {
@@ -37,6 +34,21 @@ public class ObjectPlus implements Serializable
     public static void readEkstansja(ObjectInputStream stream) throws IOException, ClassNotFoundException
     {
         ekstensje = (Hashtable) stream.readObject();
+    }
+
+
+    public static <T> void deleteExtension(T name) {
+        List<T> list = (List<T>) ekstensje.get(name.getClass());
+        list.remove(name);
+    }
+
+    public static int extentSize(Class<? extends ObjectPlus> className) {
+        int counter = 0;
+        if (ekstensje.containsKey(className)) {
+            counter = ekstensje.get(className).size();
+        }
+        System.out.println(" Extent " + className.getSimpleName() + " : " + counter);
+        return counter;
     }
 
     public static void showEkstansja(Class klasa) throws Exception

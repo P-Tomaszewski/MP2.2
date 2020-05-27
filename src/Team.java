@@ -1,5 +1,4 @@
 import java.io.Serializable;
-import java.util.Map;
 
 public class Team extends ObjectPlusPlus implements Serializable {
   private static final long serialVersionUID = 0073L;
@@ -9,13 +8,9 @@ public class Team extends ObjectPlusPlus implements Serializable {
     return teamName;
   }
 
-  public void setTeamName(String teamName) {
-    this.teamName = teamName;
-  }
-
   public Team(String teamName) {
     super();
-    setTeamName(teamName);
+    this.teamName = teamName;
   }
 
   public String toString() {
@@ -23,6 +18,37 @@ public class Team extends ObjectPlusPlus implements Serializable {
     result.append("Nazwa druzyny: " + getTeamName());
     return result.toString();
   }
+
+  public Driver createDriver(String driverName, String driverLastName) throws Exception{
+    Driver driver = new Driver(driverName, driverLastName);
+    this.addPart(RoleUtils.DRIVER_ROLE, RoleUtils.TEAM_ROLE, driver);
+    return driver;
+  }
+
+  public class Driver extends ObjectPlusPlus {
+    public String name;
+    public String lastName;
+
+    public String getLastName() {
+      return lastName;
+    }
+    public String getName() {
+      return name;
+    }
+
+    private Driver(String name, String lastName) {
+      super();
+      this.name = name;
+      this.lastName= lastName;
+    }
+
+    public String toString() {
+      StringBuilder result = new StringBuilder();
+      result.append("Imie i nazwisko: " + getName() + " " + getLastName());
+      return result.toString();
+    }
+  }
+
 
 
 

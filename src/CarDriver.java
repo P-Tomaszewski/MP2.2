@@ -3,36 +3,23 @@ import java.time.LocalDate;
 
 public class CarDriver extends ObjectPlusPlus implements Serializable {
   private static final long serialVersionUID = 00374L;
-  LocalDate dateStart;
-  LocalDate dateEnd;
 
-  public CarDriver(LocalDate dateStart, LocalDate dateEnd) {
+  LocalDate rentDate;
+
+  public CarDriver(LocalDate rentDate, Team.Driver driver, Car car) {
     super();
-    setDateEnd(dateEnd);
-    setDateStart(dateStart);
+    this.rentDate = rentDate;
+    this.addLink(RoleUtils.CAR_ROLE, RoleUtils.CAR_DRIVER_ROLE, car);
+    this.addLink(RoleUtils.DRIVER_ROLE, RoleUtils.CAR_DRIVER_ROLE, driver);
   }
 
-  public LocalDate getDateStart() {
-    return dateStart;
+  public LocalDate getRentDate() {
+    return rentDate;
   }
 
-  public void setDateStart(LocalDate dateStart) {
-    this.dateStart = dateStart;
-  }
-
-  public LocalDate getDateEnd() {
-    return dateEnd;
-  }
-
-  public void setDateEnd(LocalDate dateEnd) {
-    this.dateEnd = dateEnd;
-  }
   public String toString() {
     StringBuilder result = new StringBuilder();
-    result.append(" Data początku uzytkowania: " + getDateStart());
-    result.append(" Data konca uzytkowania: " + getDateEnd());
+    result.append("Data uzytkowania: " + getRentDate());
     return result.toString();
   }
-
-
 }

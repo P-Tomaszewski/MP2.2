@@ -1,17 +1,15 @@
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.*;
 
 
 public class ObjectPlusPlus extends ObjectPlus implements Serializable {
 
-   //informacje o wszystkich powiazaniach tego obiektu.
+   //Wszystkie powiazaniach tego obiektu.
   protected Hashtable<String, HashMap<Object, ObjectPlusPlus>> links = new Hashtable<String, HashMap<Object, ObjectPlusPlus>>();
 
-   //informacje o wszystkich czesciach powiazanych
+   //Przechowuje informacje o wszystkich czesciach powiazanych
+   //z ktorymkolwiek z obiektow.
   protected static HashSet<ObjectPlusPlus> allParts = new HashSet<ObjectPlusPlus>();
 
   public ObjectPlusPlus() {
@@ -89,6 +87,52 @@ public class ObjectPlusPlus extends ObjectPlus implements Serializable {
     return (ObjectPlusPlus[]) objectLinks.values().toArray(new ObjectPlusPlus[0]);
   }
 
+  private void removeLink(String roleName, String reverseRoleName, ObjectPlusPlus targetObject, Object qualifier, int counter) {
+    Map<Object, ObjectPlusPlus> objectLinks = new HashMap<>();
+
+    if (counter < 1) {
+      return;
+    }
+
+    if (links.containsKey(roleName)) {
+      // Remove the links
+      objectLinks = links.remove(roleName);
+    }
+
+    // Sprawdz czy powiazanie juz istnieje?
+    // Jezeli tak to zignoruj dodawanie
+    if (objectLinks.containsKey(qualifier)) {
+      //  usun powiazanie dla tego obiektu
+      objectLinks.remove(qualifier, targetObject);
+
+      //usun powiazanie zwrotne
+      targetObject.removeLink(reverseRoleName, roleName, this, this, counter - 1);
+    }
+  }
+
+
+  public void removeLink(String roleName, String reverseRoleName, ObjectPlusPlus targetObject, Object qualifier) {
+    removeLink(roleName, reverseRoleName, targetObject, qualifier, 2);
+  }
+
+
+  public void removeLink(String roleName, String reverseRoleName, ObjectPlusPlus targetObject) {
+    removeLink(roleName, reverseRoleName, targetObject, targetObject);
+  }
+
+
+  public void removePart(String roleName, String reverseRoleName, ObjectPlusPlus partObject) throws Exception {
+    // czy czesc gdzies wystepuje
+    if (!allParts.contains(partObject)) {
+      throw new Exception("The part is not connected to a whole!");
+    }
+
+    removeLink(roleName, reverseRoleName, partObject);
+
+
+    allParts.remove(partObject);
+  }
+
 
    // Informuje czy istnieja powiazania dla podanej nazwy roli
   public boolean areLinks(String roleName) {
@@ -127,13 +171,11 @@ public class ObjectPlusPlus extends ObjectPlus implements Serializable {
     HashMap<Object, ObjectPlusPlus> objectLinks;
 
     if(!links.containsKey(roleName)) {
-      // Brak powiazan dla tej roli
       throw new Exception("Brak powiazan dla roli: " + roleName);
     }
 
     objectLinks = links.get(roleName);
     if(!objectLinks.containsKey(qualifier)) {
-      // Brak powiazan dla tej roli
       throw new Exception("Brak powiazania dla kwalifikatora: " + qualifier);
     }
     return objectLinks.get(qualifier);
